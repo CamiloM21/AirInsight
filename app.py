@@ -21,6 +21,7 @@ class AirQualityInput(BaseModel):
 @app.post("/predict")
 def predict(input_data: AirQualityInput):
     try:
+        print("Datos recibidos:", input_data)
         # Crear el vector de entrada
         row = np.array([
             input_data.PM25,
@@ -33,13 +34,17 @@ def predict(input_data: AirQualityInput):
 
         # Escalar
         X_scaled = scaler.transform(row)
+        print("Datos escalados:", X_scaled)
 
         # Reducir dimensiones con PCA
         X_pca = pca.transform(X_scaled)
+        print("Datos después de PCA:", X_pca)
 
         # Predecir
         prediction = model.predict(X_pca)[0]
+        print("Predicción:", prediction)
 
         return {"prediction": str(prediction)}
     except Exception as e:
+        print("Error en la predicción:", e)
         raise HTTPException(status_code=400, detail=f"Error en la predicción: {str(e)}")
